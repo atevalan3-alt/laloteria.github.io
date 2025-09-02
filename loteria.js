@@ -1,5 +1,4 @@
 // Definimos los símbolos (nombre y el nombre del archivo de la imagen)
-// **Asegúrate de que los nombres de los archivos coincidan con tus imágenes en la carpeta 'La Bandera'**
 const symbols = [
     { name: "Monja Blanca", fileName: "5.png" },
     { name: "Ceiba", fileName: "4.png" },
@@ -21,6 +20,7 @@ const symbols = [
     { name: "El Baile del Venado", fileName: "18.png" },
     { name: "La Antorcha", fileName: "19.png" },
     { name: "Los Platillos Tipicos", fileName: "20.png" }
+
 ];
 
 // Variables del juego
@@ -52,7 +52,7 @@ function renderBoard(board) {
         cell.dataset.name = symbol.name;
         
         const img = document.createElement('img');
-        img.src = `./La Bandera/${symbol.fileName}`; // Usa la ruta que proporcionaste
+        img.src = `./images/${symbol.fileName}`;
         img.alt = symbol.name;
         
         cell.appendChild(img);
@@ -100,6 +100,3 @@ playerForm.addEventListener('submit', (e) => {
         renderBoard(playerBoard);
     }
 });
-
-// Nota: El botón de lotería y la lógica de la ruleta fueron eliminados en versiones anteriores
-// ya que no eran parte de la mecánica final del juego.
