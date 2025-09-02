@@ -1,5 +1,5 @@
 // Definimos los símbolos (nombre y el nombre del archivo de la imagen)
-// **Asegúrate de que los nombres de los archivos coincidan con tus imágenes en la carpeta 'images'**
+// **Asegúrate de que los nombres de los archivos coincidan con tus imágenes en la carpeta 'La Bandera'**
 const symbols = [
     { name: "Monja Blanca", fileName: "5.png" },
     { name: "Ceiba", fileName: "4.png" },
@@ -21,16 +21,11 @@ const symbols = [
     { name: "El Baile del Venado", fileName: "18.png" },
     { name: "La Antorcha", fileName: "19.png" },
     { name: "Los Platillos Tipicos", fileName: "20.png" }
-
 ];
 
 // Variables del juego
 let playerName = '';
-let playerBoard = [];
 let markedCells = 0;
-let drawnSymbols = [];
-let gameInterval;
-let spinInterval;
 
 // Referencias a los elementos del DOM
 const loginScreen = document.getElementById('login-screen');
@@ -39,13 +34,12 @@ const winnerScreen = document.getElementById('winner-screen');
 const playerForm = document.getElementById('player-form');
 const playerNameInput = document.getElementById('player-name');
 const playerDisplay = document.getElementById('player-display');
-const currentSymbolDisplay = document.getElementById('current-symbol');
 const boardContainer = document.getElementById('board-container');
-const loteriaButton = document.getElementById('loteria-button');
+const loteriaMessage = document.getElementById('loteria-message');
 
 // Función para generar una tarjeta de lotería aleatoria de 3x3
 function createRandomBoard() {
-    const shuffledSymbols = symbols.sort(() => 0.10 - Math.random());
+    const shuffledSymbols = symbols.sort(() => 0.5 - Math.random());
     return shuffledSymbols.slice(0, 9);
 }
 
@@ -58,7 +52,7 @@ function renderBoard(board) {
         cell.dataset.name = symbol.name;
         
         const img = document.createElement('img');
-        img.src = `./La Bandera/${symbol.fileName}`; // Ruta relativa a la carpeta de imágenes
+        img.src = `./La Bandera/${symbol.fileName}`; // Usa la ruta que proporcionaste
         img.alt = symbol.name;
         
         cell.appendChild(img);
@@ -71,46 +65,27 @@ function renderBoard(board) {
 function handleCellClick(event) {
     const cell = event.target.closest('.card-cell');
     if (!cell) return;
-
-    const symbolName = cell.dataset.name;
-    const isDrawn = drawnSymbols.some(s => s.name === symbolName);
-
-    if (isDrawn && !cell.classList.contains('marked')) {
-        cell.classList.add('marked');
-        markedCells++;
-
-        if (markedCells === 9) {
-            loteriaButton.classList.remove('hidden');
-        }
-    }
-}
-
-// Función para iniciar el sorteo de símbolos (la ruleta)
-function startDrawingSymbols() {
-    let availableSymbols = symbols.filter(s => !drawnSymbols.some(ds => ds.name === s.name));
     
-    if (availableSymbols.length === 0) {
-        clearInterval(gameInterval);
+    // Si la celda ya está marcada, no hacer nada
+    if (cell.classList.contains('marked')) {
         return;
     }
 
-    const currentSymbol = availableSymbols[Math.floor(Math.random() * availableSymbols.length)];
-    let spinCount = 0;
-    const maxSpin = 5;
+    cell.classList.add('marked');
+    markedCells++;
 
-    spinInterval = setInterval(() => {
-        if (spinCount < maxSpin) {
-            const tempSymbol = symbols[Math.floor(Math.random() * symbols.length)];
-            currentSymbolDisplay.innerHTML = `<img id="current-symbol-img" src="./La Bandera/${tempSymbol.fileName}" alt="${tempSymbol.name}">`;
-            spinCount++;
-        } else {
-            clearInterval(spinInterval);
-            currentSymbolDisplay.innerHTML = `<img id="current-symbol-img" src="./La Bandera/${currentSymbol.fileName}" alt="${currentSymbol.name}">`;
-            drawnSymbols.push(currentSymbol);
-            
-            gameInterval = setTimeout(startDrawingSymbols, 1500);
-        }
-    }, 200);
+    // Verificar si el jugador ha ganado
+    if (markedCells === 9) {
+        // Mostrar el mensaje de "¡Lotería!"
+        loteriaMessage.classList.remove('hidden');
+
+        // Después de un breve retraso, mostrar la pantalla del ganador
+        setTimeout(() => {
+            gameScreen.classList.add('hidden');
+            winnerScreen.classList.remove('hidden');
+            document.getElementById('winner-name').textContent = `¡${playerName} ha ganado!`;
+        }, 1500); // Esperar 1.5 segundos para la transición
+    }
 }
 
 // Lógica principal al enviar el formulario
@@ -121,18 +96,10 @@ playerForm.addEventListener('submit', (e) => {
         loginScreen.classList.add('hidden');
         gameScreen.classList.remove('hidden');
         playerDisplay.textContent = `Jugador: ${playerName}`;
-        playerBoard = createRandomBoard();
+        const playerBoard = createRandomBoard();
         renderBoard(playerBoard);
-        startDrawingSymbols();
     }
 });
 
-// Lógica al presionar el botón de "¡Lotería!"
-loteriaButton.addEventListener('click', () => {
-    if (markedCells === 9) {
-        clearTimeout(gameInterval);
-        gameScreen.classList.add('hidden');
-        winnerScreen.classList.remove('hidden');
-        document.getElementById('winner-name').textContent = `¡${playerName} ha ganado!`;
-    }
-});
+// Nota: El botón de lotería y la lógica de la ruleta fueron eliminados en versiones anteriores
+// ya que no eran parte de la mecánica final del juego.
