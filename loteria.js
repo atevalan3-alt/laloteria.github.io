@@ -1,4 +1,3 @@
-// Definimos los símbolos (nombre y el nombre del archivo de la imagen)
 const symbols = [
     { name: "Monja Blanca", fileName: "5.png" },
     { name: "Ceiba", fileName: "4.png" },
@@ -20,14 +19,12 @@ const symbols = [
     { name: "El Baile del Venado", fileName: "18.png" },
     { name: "La Antorcha", fileName: "19.png" },
     { name: "Los Platillos Tipicos", fileName: "20.png" }
-
 ];
 
-// Variables del juego
-let playerName = '';
-let markedCells = 0;
+const MAX_PLAYERS = 10;
+let players = [];
+let gameStarted = false;
 
-// Referencias a los elementos del DOM
 const loginScreen = document.getElementById('login-screen');
 const gameScreen = document.getElementById('game-screen');
 const winnerScreen = document.getElementById('winner-screen');
@@ -36,14 +33,15 @@ const playerNameInput = document.getElementById('player-name');
 const playerDisplay = document.getElementById('player-display');
 const boardContainer = document.getElementById('board-container');
 const loteriaMessage = document.getElementById('loteria-message');
+const playerCounter = document.getElementById('player-counter');
+const startButton = document.getElementById('start-button');
+const otherPlayersList = document.getElementById('other-players');
 
-// Función para generar una tarjeta de lotería aleatoria de 3x3
 function createRandomBoard() {
     const shuffledSymbols = symbols.sort(() => 0.5 - Math.random());
     return shuffledSymbols.slice(0, 9);
 }
 
-// Función para dibujar la tarjeta del jugador en la pantalla con imágenes
 function renderBoard(board) {
     boardContainer.innerHTML = '';
     board.forEach(symbol => {
@@ -52,7 +50,7 @@ function renderBoard(board) {
         cell.dataset.name = symbol.name;
         
         const img = document.createElement('img');
-        img.src = `./images/${symbol.fileName}`;
+        img.src = `./La Bandera/${symbol.fileName}`;
         img.alt = symbol.name;
         
         cell.appendChild(img);
@@ -61,42 +59,71 @@ function renderBoard(board) {
     });
 }
 
-// Lógica para marcar una celda
 function handleCellClick(event) {
+    if (!gameStarted) return; // No se puede marcar si el juego no ha empezado
+
     const cell = event.target.closest('.card-cell');
-    if (!cell) return;
-    
-    // Si la celda ya está marcada, no hacer nada
-    if (cell.classList.contains('marked')) {
+    if (!cell || cell.classList.contains('marked')) {
         return;
     }
 
     cell.classList.add('marked');
-    markedCells++;
+    const currentPlayer = players[0]; // Asumiendo que el jugador actual es el primero en la lista
+    currentPlayer.markedCells++;
 
-    // Verificar si el jugador ha ganado
-    if (markedCells === 9) {
-        // Mostrar el mensaje de "¡Lotería!"
+    if (currentPlayer.markedCells === 9) {
         loteriaMessage.classList.remove('hidden');
 
-        // Después de un breve retraso, mostrar la pantalla del ganador
         setTimeout(() => {
             gameScreen.classList.add('hidden');
             winnerScreen.classList.remove('hidden');
-            document.getElementById('winner-name').textContent = `¡${playerName} ha ganado!`;
-        }, 1500); // Esperar 1.5 segundos para la transición
+            document.getElementById('winner-name').textContent = `¡${currentPlayer.name} ha ganado!`;
+        }, 1500);
     }
 }
 
-// Lógica principal al enviar el formulario
 playerForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    playerName = playerNameInput.value;
-    if (playerName) {
-        loginScreen.classList.add('hidden');
-        gameScreen.classList.remove('hidden');
-        playerDisplay.textContent = `Jugador: ${playerName}`;
-        const playerBoard = createRandomBoard();
-        renderBoard(playerBoard);
+    const newPlayerName = playerNameInput.value;
+    if (newPlayerName && players.length < MAX_PLAYERS) {
+        const newPlayer = {
+            name: newPlayerName,
+            board: createRandomBoard(),
+            markedCells: 0,
+        };
+        players.push(newPlayer);
+        
+        playerNameInput.value = '';
+        updatePlayerCounter();
+        
+        // Simular que el primer jugador registrado es el que está jugando
+        if (players.length === 1) {
+            loginScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            playerDisplay.textContent = `Jugador: ${players[0].name}`;
+            renderBoard(players[0].board);
+        }
+
+        // Si se alcanza el límite de jugadores, iniciar el juego
+        if (players.length === MAX_PLAYERS) {
+            startButton.classList.remove('hidden');
+            playerCounter.textContent = '¡Todos los jugadores listos!';
+        }
     }
+});
+
+function updatePlayerCounter() {
+    playerCounter.textContent = `Jugadores registrados: ${players.length}/${MAX_PLAYERS}`;
+    let otherPlayersHtml = '<h3>Otros jugadores:</h3><ul>';
+    players.slice(1).forEach(player => {
+        otherPlayersHtml += `<li>${player.name}</li>`;
+    });
+    otherPlayersHtml += '</ul>';
+    otherPlayersList.innerHTML = otherPlayersHtml;
+}
+
+startButton.addEventListener('click', () => {
+    gameStarted = true;
+    startButton.classList.add('hidden');
+    // Aquí podrías agregar lógica para mostrar el juego a todos los jugadores si fuera multijugador
 });
