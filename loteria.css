@@ -52,7 +52,6 @@ button:hover {
     background-color: #082d6b;
 }
 
-/* Estilos de la tarjeta de lotería - AHORA 3x3 */
 #board-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -61,7 +60,7 @@ button:hover {
 }
 
 .card-cell {
-    width: 150px; /* Tamaño más grande para la imagen */
+    width: 150px;
     height: 150px;
     display: flex;
     justify-content: center;
@@ -93,23 +92,30 @@ button:hover {
     border-radius: 50%;
 }
 
-/* Estilo para la ruleta de símbolos */
-#current-symbol-img {
-    width: 150px;
-    height: 150px;
-    object-fit: contain;
-    margin-top: 10px;
-}
-
-#loteria-button {
-    background-color: #4CAF50;
-    color: white;
-    font-size: 20px;
+#loteria-message {
+    color: #0c3b87;
+    font-size: 3em;
     font-weight: bold;
-    padding: 15px;
-    border: none;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
 }
 
-#loteria-button:hover {
-    background-color: #45a049;
+/* Estilos para dispositivos móviles */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+    
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .card-cell {
+        width: 100px;
+        height: 100px;
+    }
+
+    .card-cell.marked::after {
+        font-size: 50px;
+    }
 }
