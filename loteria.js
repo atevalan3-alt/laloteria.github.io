@@ -60,17 +60,20 @@ function renderBoard(board) {
 }
 
 function handleCellClick(event) {
-    if (!gameStarted) return; // No se puede marcar si el juego no ha empezado
+    // Buscar el contenedor de la celda, sin importar si el clic fue en la imagen o en el div.
+    const cell = event.target.closest('.card-cell'); 
 
-    const cell = event.target.closest('.card-cell');
+    // Si no se encuentra un contenedor de celda o la celda ya está marcada, salir de la función.
     if (!cell || cell.classList.contains('marked')) {
         return;
     }
 
+    // Marcar la celda, ya que la validación ha pasado.
     cell.classList.add('marked');
-    const currentPlayer = players[0]; // Asumiendo que el jugador actual es el primero en la lista
+    const currentPlayer = players[0]; 
     currentPlayer.markedCells++;
 
+    // Comprobar si el jugador ha ganado.
     if (currentPlayer.markedCells === 9) {
         loteriaMessage.classList.remove('hidden');
 
@@ -96,7 +99,6 @@ playerForm.addEventListener('submit', (e) => {
         playerNameInput.value = '';
         updatePlayerCounter();
         
-        // Simular que el primer jugador registrado es el que está jugando
         if (players.length === 1) {
             loginScreen.classList.add('hidden');
             gameScreen.classList.remove('hidden');
@@ -104,7 +106,6 @@ playerForm.addEventListener('submit', (e) => {
             renderBoard(players[0].board);
         }
 
-        // Si se alcanza el límite de jugadores, iniciar el juego
         if (players.length === MAX_PLAYERS) {
             startButton.classList.remove('hidden');
             playerCounter.textContent = '¡Todos los jugadores listos!';
@@ -125,5 +126,4 @@ function updatePlayerCounter() {
 startButton.addEventListener('click', () => {
     gameStarted = true;
     startButton.classList.add('hidden');
-    // Aquí podrías agregar lógica para mostrar el juego a todos los jugadores si fuera multijugador
 });
