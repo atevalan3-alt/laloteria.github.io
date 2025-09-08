@@ -101,7 +101,7 @@ button:hover {
 }
 
 /* Estilos para dispositivos móviles */
-@media (max-width: 600px) {
+@media (max-width: 800px) {
     .container {
         padding: 10px;
     }
